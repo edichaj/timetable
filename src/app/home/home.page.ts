@@ -18,6 +18,7 @@ import * as actions from '../timetableredux/timetable.actions';
 import { getObject, setObject, initialState } from '../timetableredux/timetable.reducer';
 import { MininavComponent } from '../mininav/mininav.component';
 import { PopoverfactoryService } from '../popoverfactory.service';
+import { NotifierService } from '../notifier.service';
 
 declare let Hammer: any;
 const { LocalNotifications } = Plugins;
@@ -41,7 +42,8 @@ export class HomePage {
     @Inject(TIMETABLE_STORE_TOKEN) private store: Store<Timetable>,
     public toastController: ToastController,
     public popoverfactory: PopoverfactoryService,
-    public navController: NavController
+    public navController: NavController,
+    private notifier: NotifierService
   ) {
 
     getObject().then(res => {
@@ -49,13 +51,18 @@ export class HomePage {
       if(!content) {
         setObject(initialState);
       }
-    })
-    
+    });
+
     let today = new Date().getDay();
     this.day = this.days[today];
     this.fullDay = this.fullDays[today];
     this.store.subscribe(() => this.readState());
     this.readState();
+
+     // set notifications for all the activities for today
+     for(let activity of this.activities) {
+       this.scheduleActivity(activity.activityId)
+     }
   }
 
 
@@ -66,7 +73,6 @@ export class HomePage {
   }
 
   ngOnInit() {
-    console.log(this.navController);
     let todaysTasks = [];
     getObject().then(response => {
       let today = this.days[new Date().getDay()];
@@ -82,7 +88,6 @@ export class HomePage {
     this.setCurrentDay(this.day);
     let hamma = new Hammer(this.mainContent.el);
     hamma.on('swipe',(ev) => {
-      console.log(ev);
       let hasNotFailedTests = (ev.distance < 200) && 
                               !(["input","ion-item-group"].includes(ev.target.localName));
       if((ev.direction === 2 || ev.direction === 3) && hasNotFailedTests) {
@@ -100,21 +105,13 @@ export class HomePage {
     });
   }
 
-  deleteActivity(activityId: string) {
+  async deleteActivity(activityId: string) {
     this.store.dispatch(actions.unregisterActivity({ activityId: activityId }));
-  }
-
-  changeScreen(ev: any) {
-    this.setCurrentDay(ev.detail.value);
+    await this.notifier.deleteNotification(activityId);
   }
 
   setCurrentDay(day: string) {
     this.day = day;
-    this.fullDay = this.fullDays[this.days.indexOf(day)];
-    this.reloadActivities();
-  }
-
-  reloadActivities() {
     this.readState();
   }
 
@@ -156,11 +153,10 @@ export class HomePage {
       description: '',
       startTime: undefined,
       endTime: undefined
-    }))
-    this.reloadActivities();
+    }));
   }
 
-  updateValue(activityId: string, target, newValue: any) {
+  async updateValue(activityId: string, target, newValue: any) {
     let payload;
     switch(target) {
       case 'title':
@@ -185,18 +181,39 @@ export class HomePage {
       }
     ));
     setObject(this.store.getState());
+
+    if(target === "title" || target === "starttime") {
+      await this.scheduleActivity(activityId);
+    }
+    
+  }
+
+  async scheduleActivity(activityId: string) {
+    let alias = [...this.store.getState().activities];
+    let activity = <Activity>alias.filter(activity => activity.activityId === activityId)[0];
+    let today = new Date().getDay();
+    if(this.days.indexOf(activity.day) === today) {
+      this.notifier.scheduleNotification({
+        title: 'Your timetable',
+        body: `${activity.title} starting in the next few moments`,
+        id: Number(activityId),
+        date: new Date(activity.startTime)
+      });
+    }
+
   }
 
   generateId() {
     function random(seed) {
       return Math.floor(Math.random() * seed);
     }
-    return `ti${random(8734)}me-ta${random(284)}b-l${random(17892)}e`;
+    return String( random(1712625374) );
   }
   
   readState() {
     const state: Timetable = this.store.getState() as Timetable;
-    this.activities = state.activities.filter(activity => activity.day === this.day);
+    let alias: Array<Activity> = [...state.activities];
+    this.activities = alias.filter(activity => activity.day === this.day);
     setObject(state);
   }
 

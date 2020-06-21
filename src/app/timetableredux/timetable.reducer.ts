@@ -94,8 +94,9 @@ function editActivityInfo(state: Timetable, payload: EditActivityPayload): Timet
   let targetActivity = [...state.activities.filter(activity => activity.activityId === payload.activityId)][0];
   let alias = [...state.activities];
   let targetActivityIndex = state.activities.indexOf(targetActivity);
-  let tasksBeforeTarget = alias.splice(0,targetActivityIndex);
-  let tasksAfterTarget = alias.splice(targetActivityIndex + 1);
+  let tasksBeforeTarget = [...alias].splice(0,targetActivityIndex);
+  let tasksAfterTarget = [...alias].splice(targetActivityIndex + 1);
+  console.log(targetActivityIndex,tasksBeforeTarget,tasksAfterTarget);
 
   for(let newDetail of payload.newDetails) {
     targetActivity[Object.keys(newDetail)[0]] = Object.values(newDetail)[0];

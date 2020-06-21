@@ -16,8 +16,8 @@ export interface RegisterPayload extends Identifiers {
   activityId: string;
   title: string;
   description: string;
-  startTime: number;
-  endTime: number;
+  startTime: Date;
+  endTime: Date;
 }
 
 export interface UnregisterPayload extends Identifiers, ActivityId {}
@@ -33,8 +33,8 @@ export interface Activity extends Identifiers, ActivityId {
   activityId: string;
   title: string;
   description: string;
-  startTime: number;
-  endTime: number;
+  startTime: Date;
+  endTime: Date;
 }
 
 export interface Timetable {

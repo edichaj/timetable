@@ -13,7 +13,7 @@ import { AppRoutingModule } from './app-routing.module';
 
 import { timetableStoreProviders } from './timetableredux/timetable.store';
 import { PopoverfactoryService } from './popoverfactory.service';
-
+import { NotifierService } from './notifier.service';
 
 @NgModule({
   declarations: [
@@ -31,7 +31,8 @@ import { PopoverfactoryService } from './popoverfactory.service';
     SplashScreen,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     timetableStoreProviders,
-    PopoverfactoryService
+    PopoverfactoryService,
+    NotifierService
   ],
   bootstrap: [AppComponent]
 })
