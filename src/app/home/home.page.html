@@ -1,0 +1,60 @@
+<ion-header class="">
+  <ion-toolbar class="ion-justify-content-end ion-align-items-end">
+    <ion-title>Timetable</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button fill="clear" (click)="addBlankActivity()">
+        <ion-icon slot="icon-only" name="add"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" (click)="presentPopover($event)">
+        <ion-icon slot="icon-only" name="ellipsis-vertical-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content #mainContent>
+  <ion-segment scrollable id="custom-nav" class="ion-no-border" (ionChange)="setCurrentDay($event.detail.value)" [(ngModel)]="day" value="{{ day }}">
+    <ion-segment-button *ngFor="let day of days" value="{{ day }}" checked>
+      <ion-label class="{{ day }}" color="dark">{{ day }}</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <ion-item-group class="activities">
+    <ion-card *ngFor="let activity of activities, let i=index">
+      <ion-item-sliding>
+        <ion-item id="{{ activity.activityId }}" class="activity">
+          <div>
+            <ion-item class="title">
+              <ion-input #title (input)="updateValue(activity.activityId,'title',title.value)" class="title has-border-bottom" [(ngModel)]="activities[i].title" placeholder="Title"></ion-input>  
+            </ion-item>
+            <ion-item class="description-item">
+              <ion-input #description (input)="updateValue(activity.activityId,'description',description.value)" [(ngModel)]="activities[i].description" class="has-border-bottom description" placeholder="Brief Description"></ion-input>  
+            </ion-item>
+            <div>
+              <ion-item class="start-time">
+                <ion-datetime #start (ionChange)="updateValue(activity.activityId,'starttime',start.value)"  displayFormat="h:mm a" [(ngModel)]="activities[i].startTime" placeholder="Start time"></ion-datetime>
+              </ion-item>
+              <ion-item class="end-time">
+                <ion-datetime #end (ionChange)="updateValue(activity.activityId,'endtime',end.value)"  displayFormat="h:mm a" [(ngModel)]="activities[i].endTime" placeholder="End time"></ion-datetime>
+              </ion-item>
+            </div>
+          </div>
+        </ion-item>
+
+        <ion-item-options side="end">
+          <ion-item-option expandable color="danger" (click)="deleteActivity(activity.activityId)">
+            <ion-icon slot="icon-only" name="trash"></ion-icon>
+          </ion-item-option>
+        </ion-item-options>     
+      </ion-item-sliding>
+
+    </ion-card>
+  </ion-item-group>
+
+  <ion-item *ngIf="activities.length < 1" class="no-activity-card">
+    <div>
+      <ion-icon slot="icon-only" name="glasses-outline"></ion-icon>
+      <ion-title>No activity</ion-title>
+    </div>
+  </ion-item>
+</ion-content>

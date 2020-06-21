@@ -1,0 +1,7 @@
+<ion-content>
+  <ion-list lines="none">
+    <ion-item *ngFor="let link of links" (click)="navigate(link.toLowerCase())">
+      <ion-label>{{ link }}</ion-label>
+    </ion-item>   
+  </ion-list>
+</ion-content>

@@ -1,0 +1,23 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Settings</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button icon="arrow-back-outline" fill="clear"></ion-back-button>
+    </ion-buttons>
+    <ion-buttons slot="end">  
+      <ion-button fill="clear" (click)="presentPopover($event)">
+        <ion-icon slot="icon-only" name="ellipsis-vertical-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-list-header>Notification</ion-list-header>
+    <ion-item>
+      <ion-label>Prior Notification Time</ion-label>
+      <ion-datetime slot="end" [(ngModel)]="alertTime" displayFormat="mm" placeholder="Munites" (ionChange)="call()"></ion-datetime>
+    </ion-item>
+  </ion-list>
+</ion-content>
