@@ -1,5 +1,6 @@
 # TIMETABLE
-### Android application that stores regular daily routines & a remainder
+### A hybrid application that stores regular daily routines & a remainder.
+> Target platform: Android
 
 It allows the user register daily activities like lectures and also notify the user about the closest activity on the registered activities for each day.
 
